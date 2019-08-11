@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Layout, Button } from 'antd'
+import { Table, Layout, Divider, Form, Input, Button, Modal } from 'antd'
 import WeatherWidget from './weatherWidget'
 import './App.css'
 
@@ -11,6 +11,7 @@ const url =
 
 class App extends Component {
   state = {
+    settingsVisible: false,
     cities: [
       {
         country_code: 'fr',
@@ -88,23 +89,117 @@ class App extends Component {
     })
   }
 
-  render() {
+  add = e => {
+    e.preventDefault()
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        const { cities } = this.state
+        cities.push(values)
+        this.setState({ cities }, () => this.props.form.resetFields())
+      }
+    })
+  }
+
+  remove = id => {
     const { cities } = this.state
-    this.updateWeather()
+    this.setState({ cities: cities.filter(city => city.id !== id) })
+  }
+
+  render() {
+    const { getFieldDecorator } = this.props.form
+    const { cities, settingsVisible } = this.state
+    const columns = [
+      {
+        title: 'ID',
+        dataIndex: 'id',
+        key: 'id'
+      },
+      {
+        title: 'Name',
+        dataIndex: 'name',
+        key: 'name'
+      },
+      {
+        title: 'Action',
+        key: 'action',
+        render: (text, city) => (
+          <Button onClick={() => this.remove(city.id)} type="link">
+            delete
+          </Button>
+        )
+      }
+    ]
+
+    const checkForDuplicates = (rule, value, callback) => {
+      const id = parseInt(value)
+      if (cities.findIndex(city => city.id === id) !== -1) {
+        callback(true)
+      } else {
+        callback()
+      }
+    }
+
+    this.updateWeather() // not ideal, but this is not a bad place
+
     return (
       <Layout className="App">
         <Header className="App-header">
           <span>Weather Widget</span>
-          <Button type="primary">Settings</Button>
+          <Button
+            type="primary"
+            onClick={() => this.setState({ settingsVisible: true })}
+          >
+            Settings
+          </Button>
         </Header>
         <Content>
           {cities.map(city => (
             <WeatherWidget key={city.id} {...city} />
           ))}
         </Content>
+        <Modal
+          visible={settingsVisible}
+          title="Settings"
+          footer=""
+          onCancel={() => this.setState({ settingsVisible: false })}
+        >
+          <Table
+            bordered
+            size="small"
+            pagination={{ defaultPageSize: 5, hideOnSinglePage: true }}
+            dataSource={cities}
+            columns={columns}
+          />
+          <Divider />
+          <Form
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 12 }}
+            onSubmit={this.add}
+          >
+            <Form.Item label="ID">
+              {getFieldDecorator('id', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please enter openweathermap id!'
+                  },
+                  {
+                    message: 'ID is already in the list!',
+                    validator: checkForDuplicates
+                  }
+                ]
+              })(<Input placeholder='2988507' />)}
+            </Form.Item>
+            <Form.Item wrapperCol={{ span: 12, offset: 5 }}>
+              <Button type="primary" htmlType="submit">
+                Add city
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
       </Layout>
     )
   }
 }
 
-export default App
+export default Form.create({ name: 'coordinated' })(App)
