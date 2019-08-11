@@ -6,7 +6,7 @@
   justify-content: space-between;
 }
 
-.App-header>span {
+.App-header > span {
   font-size: calc(10px + 2vmin);
   color: white;
 }
@@ -17,11 +17,6 @@
   min-width: 200px;
 }
 
-.ant-card-cover {
-  display: flex;
-  justify-content: center;
-}
-
-.ant-card-cover>* {
-  width: auto;
+.ant-card-meta-avatar {
+  float: unset;
 }

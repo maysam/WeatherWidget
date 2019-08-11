@@ -25,6 +25,48 @@ class App extends Component {
       {
         id: 112931,
         name: 'Tehran'
+      },
+      {
+        id: 2643743,
+        name: 'London',
+        coord: {
+          lat: 51.5085,
+          lon: -0.1258
+        },
+        main: {
+          temp: 7,
+          pressure: 1012,
+          humidity: 81,
+          temp_min: 5,
+          temp_max: 8
+        },
+        dt: 1485791400,
+        wind: {
+          speed: 4.6,
+          deg: 90
+        },
+        sys: {
+          country: 'GB'
+        },
+        rain: null,
+        snow: null,
+        clouds: {
+          all: 90
+        },
+        weather: [
+          {
+            id: 701,
+            main: 'Mist',
+            description: 'mist',
+            icon: '50d'
+          },
+          {
+            id: 300,
+            main: 'Drizzle',
+            description: 'light intensity drizzle',
+            icon: '09d'
+          }
+        ]
       }
     ]
   }
